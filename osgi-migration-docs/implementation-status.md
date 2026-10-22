@@ -139,3 +139,15 @@ The migration from Vue 3 to React with Pandino OSGi framework has been successfu
 5. **Performance Benefits**: Optimized resource management
 
 All existing LATCH functionality has been preserved while gaining the benefits of the new modular architecture.
+
+## Post‑Merge Next Steps
+
+1. **Merge all feature branches** – merge `phase1-foundation`, `phase2-nodes`, `phase3-ui`, `phase4-services`, and `phase5-testing` into `main` (or a dedicated release branch).
+2. **Run full test suite** – `npm run test:unit` and `npm run test:integration`.
+3. **Run typecheck and lint** – `npm run typecheck` and `npm run lint`.
+4. **Build the application** – `npm run build` for both web and Electron.
+5. **Run performance benchmarks** – ensure 500+ nodes run at ≥30 FPS and memory usage < 300 MB.
+6. **Deploy a preview build** – e.g., to Vercel or Netlify, and verify the UI works as expected.
+7. **Create a release tag** – e.g., `vX.Y.Z` after all tests pass.
+8. **Update documentation** – ensure the README and migration docs reflect the new architecture.
+9. **Notify stakeholders** – share the release notes and any breaking changes.
