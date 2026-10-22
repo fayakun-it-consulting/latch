@@ -1,10 +1,9 @@
-// src/bundles/ui/bundle.ts
+// src/renderer/bundles/ui/bundle.ts
 import type { BundleActivator, BundleContext } from '@pandino/pandino'
 
 class UIEngineBundleActivator implements BundleActivator {
   async start(context: BundleContext) {
-    // Register UI services
-    // This would be for UI-related services that need to be registered
+    // Register UI‑related services here (e.g., drag‑and‑drop, styling)
   }
 }
 

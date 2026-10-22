@@ -1,27 +1,28 @@
-// src/components/canvas/CanvasInteraction.tsx
+// src/renderer/components/canvas/CanvasInteraction.tsx
 import React, { useRef, useCallback, useState } from 'react'
 
 export const CanvasInteraction: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
-  
+  const [isPanning, setIsPanning] = useState(false)
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 })
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    setIsDragging(true)
-    setDragStart({ x: e.clientX, y: e.clientY })
+    setIsPanning(true)
+    setPanStart({ x: e.clientX, y: e.clientY })
   }, [])
-  
+
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (isDragging && canvasRef.current) {
-      // Handle canvas panning
-      // This would update the canvas view position
-    }
-  }, [isDragging])
-  
+    if (!isPanning || !canvasRef.current) return
+    const dx = e.clientX - panStart.x
+    const dy = e.clientY - panStart.y
+    // Update canvas view transform – placeholder logic
+    canvasRef.current.style.transform = `translate(${dx}px, ${dy}px)`
+  }, [isPanning, panStart])
+
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false)
+    setIsPanning(false)
   }, [])
-  
+
   return (
     <div
       ref={canvasRef}
@@ -31,10 +32,8 @@ export const CanvasInteraction: React.FC = () => {
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
-      {/* Canvas content would go here */}
-      <div className="canvas-content">
-        {/* Node components would be rendered here */}
-      </div>
+      {/* Canvas content rendered by ReactCanvas component */}
+      <div className="canvas-content" />
     </div>
   )
 }

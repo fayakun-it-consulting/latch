@@ -1,42 +1,34 @@
-// src/components/controls/NodeView.tsx
+// src/renderer/components/controls/NodeView.tsx
 import React from 'react'
 import { useService } from '@pandino/react-hooks'
 import { ReactControl } from './ReactControl'
+import type { NodeSpec } from '@/interfaces/NodeSpec'
 
 interface NodeViewProps {
   nodeId: string
   definition: NodeSpec
-  values: Record<string, any>
+  values: Record<string, unknown>
   surface: 'node' | 'panel'
 }
 
 export const NodeView: React.FC<NodeViewProps> = ({ nodeId, definition, values, surface }) => {
-  const { service: nodeRegistry } = useService<NodeRegistry>('NodeRegistry')
-  
-  // Use declarative UI schema if available
-  if (definition.ui) {
-    return (
-      <div className="node-view">
-        {definition.ui.controls?.map(control => (
-          <ReactControl
-            key={control.id}
-            control={control}
-            value={values[control.id]}
-            onChange={(value) => {
-              // Handle control value change
-            }}
-          />
-        ))}
-      </div>
-    )
+  if (!definition.ui) return null
+
+  const onChange = (id: string, value: unknown) => {
+    // Persist control value – this would talk to the FlowsService
+    // Example: context.getService(FlowsService).updateNodeControl(nodeId, id, value)
   }
-  
-  // Fallback to simple rendering
+
   return (
-    <div className="node-view-fallback">
-      <div className="node-view-content">
-        Node content for {definition.label}
-      </div>
+    <div className="node-view">
+      {definition.ui.controls?.map((control) => (
+        <ReactControl
+          key={control.id}
+          control={control}
+          value={values[control.id] ?? control.default}
+          onChange={(v) => onChange(control.id, v)}
+        />
+      ))}
     </div>
   )
 }

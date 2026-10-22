@@ -1,7 +1,10 @@
-// src/components/nodes/ReactNode.tsx
-import React, { useState } from 'react'
+// src/renderer/components/nodes/ReactNode.tsx
+import React, { useState, useCallback } from 'react'
 import { useService } from '@pandino/react-hooks'
-import type { NodeSpec } from '@/interfaces/NodeSpec'
+import { NodeSpec } from '@/interfaces/NodeSpec'
+import { NodeView } from '@/renderer/components/controls/NodeView'
+import { TexturePreview } from '@/renderer/components/preview/TexturePreview'
+import { useNodeEngine } from '@/renderer/services/NodeEngineProvider' // will be created
 
 interface ReactNodeProps {
   nodeId: string
@@ -10,71 +13,74 @@ interface ReactNodeProps {
 }
 
 export const ReactNode: React.FC<ReactNodeProps> = ({ nodeId, nodeType, position }) => {
-  const { service: nodeSpec } = useService<NodeSpec>(nodeType)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isEditingLabel, setIsEditingLabel] = useState(false)
-  const [label, setLabel] = useState('')
-  
-  if (!nodeSpec) {
-    return <div className="node-placeholder">Node not found</div>
+  const { service: nodeRegistry } = useService<NodeRegistry>('NodeRegistry')
+  const { service: nodeEngine } = useService<NodeEngine>('NodeEngine')
+  const [collapsed, setCollapsed] = useState(false)
+
+  const nodeSpec = nodeRegistry?.getNodeSpec(nodeType)
+  if (!nodeSpec) return <div className="node-placeholder">Missing node</div>
+
+  // Build a simple execution context for demo purposes
+  const ctx = {
+    nodeId,
+    inputs: {},
+    controls: {},
+    definition: nodeSpec,
+    deltaTime: 0,
+    totalTime: 0,
+    frameCount: 0,
+    // Helper methods – stubbed for now
+    num: (key: string, def = 0) => def,
+    str: (key: string, def = '') => def
   }
-  
+
+  const outputs = nodeEngine?.executeNode(nodeType, ctx) ?? new Map()
+
+  const renderInputs = () => (
+    nodeSpec.inputs.map((input) => (
+      <div key={input.id} className="node-port node-port-left">
+        <div className="handle handle-left" />
+        <label>{input.label}</label>
+      </div>
+    ))
+  )
+
+  const renderOutputs = () => (
+    nodeSpec.outputs.map((output) => (
+      <div key={output.id} className="node-port node-port-right">
+        <label>{output.label}</label>
+        <div className="handle handle-right" />
+      </div>
+    ))
+  )
+
+  const renderBody = () => {
+    if (nodeSpec.ui) {
+      const values: Record<string, unknown> = {}
+      return <NodeView nodeId={nodeId} definition={nodeSpec} values={values} surface="node" />
+    }
+    if (nodeSpec.outputs.some((o) => o.type === 'texture')) {
+      return <TexturePreview nodeId={nodeId} width={120} height={80} showPlaceholder />
+    }
+    return <div className="node-content-placeholder">{nodeSpec.label}</div>
+  }
+
   return (
-    <div 
-      className={`react-node ${isCollapsed ? 'collapsed' : ''}`} 
+    <div
+      className={`react-node ${collapsed ? 'collapsed' : ''}`}
       style={{ left: position.x, top: position.y }}
-    >
-      {/* Node Header */}
-      <div className="node-header">
-        <div className="node-icon">
-          {nodeSpec.category} {/* Category icon */}
+   >
+      <div className="node-header" onDoubleClick={() => setCollapsed(!collapsed)}>
+        <span className="node-icon">{nodeSpec.category}</span>
+        <span className="node-title">{nodeSpec.label}</span>
+      </div>
+      {!collapsed && (
+        <div className="node-body">
+          <div className="inputs">{renderInputs()}</div>
+          <div className="content">{renderBody()}</div>
+          <div className="outputs">{renderOutputs()}</div>
         </div>
-        {isEditingLabel ? (
-          <input 
-            type="text" 
-            value={label} 
-            onChange={(e) => setLabel(e.target.value)}
-            onBlur={() => setIsEditingLabel(false)}
-            autoFocus
-          />
-        ) : (
-          <span 
-            className="node-title"
-            onDoubleClick={() => setIsEditingLabel(true)}
-          >
-            {nodeSpec.label}
-          </span>
-        )}
-      </div>
-      
-      {/* Node Body */}
-      <div className="node-body">
-        {/* Port Inputs */}
-        {nodeSpec.inputs.map(input => (
-          <div key={input.id} className="input-port">
-            <div className="port-handle" />
-            <label>{input.label}</label>
-          </div>
-        ))}
-        
-        {/* Node Preview or Controls */}
-        {renderNodeContent(nodeSpec)}
-        
-        {/* Port Outputs */}
-        {nodeSpec.outputs.map(output => (
-          <div key={output.id} className="output-port">
-            <label>{output.label}</label>
-            <div className="port-handle" />
-          </div>
-        ))}
-      </div>
+      )}
     </div>
   )
-}
-
-// Render node-specific content based on type
-const renderNodeContent = (nodeSpec: NodeSpec) => {
-  // Render preview, controls, etc.
-  // Based on node type, UI schema, or custom component
-  return <div className="node-content">Node content for {nodeSpec.label}</div>
 }
