@@ -213,10 +213,16 @@ export function useExecutionLoop() {
 }
 ```
 
-## Next Steps
 
-1. Begin with Task 1: Convert Node Definitions to Services
-2. Proceed to Task 2: Implement Node Engine Bundle
-3. Implement Task 3: Create Node Engine Service
-4. Complete Task 4: Create Service Registry for Core State
-5. Finalize Task 5: Implement Service Discovery in Execution Loop
+## Updated Implementation
+
+- Added **NodeExecutorRegistry** to centralise executor registration.
+- Updated **NodeEngine** to consume the registry and expose `executeNode`.
+- Implemented sample executors: **Add**, **Multiply**, **Oscillator**, **Shader**, **TextGenerate**, **WebSocket**.
+- Updated bundle structure (engine, registry, ui) accordingly.
+- Updated React components to use the executor context.
+
+## Next Steps (continued)
+
+- Implement remaining node executors for all existing node types.
+- Wire the execution engine into the runtime loop and verify integration.

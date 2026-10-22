@@ -380,10 +380,17 @@ export const CanvasInteraction: React.FC = () => {
 }
 ```
 
-## Next Steps
 
-1. Begin with Task 1: Create React Node Component
-2. Proceed to Task 2: Implement React Canvas Component
-3. Implement Task 3: Convert Control Components to React
-4. Complete Task 4: Create Service-based UI Components
-5. Finalize Task 5: Implement Canvas Interaction System
+## Updated Implementation
+
+- Added **ReactControl** and **NodeView** components for declarative UI rendering.
+- Implemented **TexturePreview** and **CanvasInteraction** for node previews and drag‑and‑drop.
+- Updated **ReactNode** to render ports, body, and collapse state using the new control schema.
+- Created **ReactCanvas** to load nodes and connections from the `FlowsService` and render them with `ReactNode`.
+- Updated the UI bundle to register any UI‑specific services.
+
+## Next Steps (continued)
+
+- Wire the canvas interaction into the main App component.
+- Implement the missing connection rendering (SVG paths).
+- Add unit tests for the new UI components.
