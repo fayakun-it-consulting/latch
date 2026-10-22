@@ -1,10 +1,9 @@
-// src/bundles/audio/bundle.ts
+// src/renderer/bundles/audio/bundle.ts
 import type { BundleActivator, BundleContext } from '@pandino/pandino'
 
 class AudioBundleActivator implements BundleActivator {
   async start(context: BundleContext) {
-    // Register audio services
-    context.registerService('AudioContextService', new WebAudioContextService())
+    context.registerService('WebAudioContextService', new WebAudioContextService())
     context.registerService('AudioAnalyzerService', new AudioAnalyzerService())
   }
 }

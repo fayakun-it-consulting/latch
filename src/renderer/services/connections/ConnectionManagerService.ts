@@ -1,58 +1,46 @@
-// src/services/connections/ConnectionManagerService.ts
+// src/renderer/services/connections/ConnectionManagerService.ts
 import { Component, Service } from '@pandino/decorators'
 
 @Component({ name: 'connection.manager.service', immediate: true })
 @Service({ interfaces: ['ConnectionManagerService'] })
 export class ConnectionManagerService {
   private connections = new Map<string, any>()
-  
-  createConnection(connectionId: string, type: string, config: any): any {
-    let connection
+
+  createConnection(id: string, type: string, config: any): any {
+    let conn
     switch (type) {
       case 'websocket':
-        connection = new WebSocketConnection(config)
+        conn = new WebSocketConnection(config)
         break
       case 'mqtt':
-        connection = new MQTTConnection(config)
+        conn = new MQTTConnection(config)
         break
       default:
         throw new Error(`Unsupported connection type: ${type}`)
     }
-    
-    this.connections.set(connectionId, connection)
-    return connection
+    this.connections.set(id, conn)
+    return conn
   }
-  
-  getConnection(connectionId: string): any {
-    return this.connections.get(connectionId)
+
+  getConnection(id: string): any {
+    return this.connections.get(id)
   }
-  
-  closeConnection(connectionId: string) {
-    const connection = this.connections.get(connectionId)
-    if (connection) {
-      connection.close()
-      this.connections.delete(connectionId)
+
+  closeConnection(id: string) {
+    const conn = this.connections.get(id)
+    if (conn) {
+      conn.close()
+      this.connections.delete(id)
     }
   }
 }
 
-// Dummy implementation for now
+// Dummy connection implementations
 class WebSocketConnection {
-  constructor(config: any) {
-    // WebSocket implementation
-  }
-  
-  close() {
-    // Close implementation
-  }
+  constructor(private config: any) {}
+  close() {}
 }
-
 class MQTTConnection {
-  constructor(config: any) {
-    // MQTT implementation
-  }
-  
-  close() {
-    // Close implementation
-  }
+  constructor(private config: any) {}
+  close() {}
 }

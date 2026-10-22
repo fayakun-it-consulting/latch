@@ -1,9 +1,8 @@
-// src/bundles/ai/bundle.ts
+// src/renderer/bundles/ai/bundle.ts
 import type { BundleActivator, BundleContext } from '@pandino/pandino'
 
 class AIBundleActivator implements BundleActivator {
   async start(context: BundleContext) {
-    // Register AI services
     context.registerService('ModelRegistryService', new ModelRegistryService())
     context.registerService('InferenceService', new InferenceService())
   }
